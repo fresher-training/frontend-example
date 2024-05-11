@@ -1,0 +1,51 @@
+---
+import { HomeLogic } from "./homeLogic";
+
+const logic = new HomeLogic();
+const url = new URL(Astro.url);
+console.log(url);
+let name = url.searchParams.get("name");
+console.log(name);
+if (!name) {
+	name = "";
+}
+const users = logic.getUsers(name);
+
+const products = await logic.getProducts();
+
+const props = { users: users, products: products };
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body>
+		<h1>The current URL is: {Astro.url}</h1>
+		<h1>Astro Updated</h1>
+		{
+			props.users.map((user) => (
+				<>
+					<span>{user}</span>
+				</>
+			))
+		}
+
+		{
+			props.products.map((product) => (
+				<>
+					<span>{product.title}</span>
+					<img
+						src={product.images[0]}
+						style="width: 150px; height: 150px;"
+					/>
+				</>
+			))
+		}
+	</body>
+	<script is:inline></script>
+</html>

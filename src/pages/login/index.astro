@@ -1,0 +1,55 @@
+---
+import { Routes } from "../../route";
+import { LoginLogic } from "./login";
+let error = "";
+const logic = new LoginLogic();
+if (Astro.request.method === "POST") {
+	try {
+		const data = await Astro.request.formData();
+		const username = data.get("username");
+		const password = data.get("password");
+		// Do something with the data
+		if (username && password) {
+			const loginResult = logic.login(
+				username.valueOf() as string,
+				password.valueOf() as string,
+			);
+			if (loginResult) {
+				return Astro.redirect(Routes.Home);
+			} else {
+				error = "Đăng nhập sai";
+			}
+		}
+	} catch (error) {
+		if (error instanceof Error) {
+			console.error(error.message);
+		}
+	}
+}
+const props = { error: error };
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body>
+		<h1>Login POST Field</h1>
+		{props.error && <span style="color: red;">{props.error}</span>}
+		<form method="post">
+			<label>
+				Username:
+				<input type="text" name="username" />
+			</label>
+			<label>
+				Password:
+				<input type="password" name="password" />
+			</label>
+			<button type="submit">Login</button>
+		</form>
+	</body>
+</html>
